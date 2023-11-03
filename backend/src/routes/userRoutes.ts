@@ -1,8 +1,8 @@
 import express from "express";
-import { getUsers } from "../controllers/userController";
-import { verifyToken } from "../middleware/verifyToken";
+import { getAllUsers } from "../controllers/userController";
+import { verifyTokenMiddleware } from "../middleware/verifyTokenMiddleware";
 
 export const userRouter = express.Router();
 
 // Protected Route using the verifyToken Middleware
-userRouter.get("/users", verifyToken, getUsers);
+userRouter.get("/", verifyTokenMiddleware, getAllUsers);

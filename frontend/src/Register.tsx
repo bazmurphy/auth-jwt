@@ -38,7 +38,9 @@ const Register = () => {
             onChange={handlePasswordChange}
           />
         </div>
-        <button onClick={handleRegister}>Register</button>
+        <button onClick={handleRegister}>
+          Register {error ? "🔴" : loading ? "🟠" : "🟢"}
+        </button>
         {loading && <p className="loading">Logging In...</p>}
         {error && <p className="error">Error: {String(error)}</p>}
       </form>

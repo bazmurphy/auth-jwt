@@ -1,5 +1,5 @@
 import "dotenv/config";
-import express from "express";
+import express, { Request, Response } from "express";
 import cors from "cors";
 import morgan from "morgan";
 import { authRouter } from "./routes/authRoutes";
@@ -13,12 +13,12 @@ app.use(morgan("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.get("/", (req, res) => {
-  res.send("Root Route");
-});
-
 app.use("/api/auth", authRouter);
 app.use("/api/users", userRouter);
+
+app.get("/", (req: Request, res: Response) => {
+  res.send("<h1>Auth JWT API Root Route</h1>");
+});
 
 const port = process.env.PORT || 4000;
 

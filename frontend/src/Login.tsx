@@ -23,7 +23,7 @@ const Login = () => {
   };
 
   return (
-    <>
+    <div className="login-container">
       <h2>Login</h2>
       <form>
         <div>
@@ -39,12 +39,12 @@ const Login = () => {
           />
         </div>
         <button onClick={handleLogin} disabled={loading}>
-          Login
+          Login {error ? "🔴" : loading ? "🟠" : "🟢"}
         </button>
         {loading && <p className="loading">Logging In...</p>}
         {error && <p className="error">Error: {String(error)}</p>}
       </form>
-    </>
+    </div>
   );
 };
 

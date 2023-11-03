@@ -22,6 +22,7 @@ interface AuthContextType {
   register: (credentials: Credentials) => void;
   login: (credentials: Credentials) => void;
   logout: () => void;
+  verify: () => void;
 }
 
 export const AuthContext = createContext<AuthContextType>(null!); // added a !
@@ -29,6 +30,7 @@ export const AuthContext = createContext<AuthContextType>(null!); // added a !
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [token, setToken] = useState<string | null>(null);
   const [user, setUser] = useState<User | null>(null);
+
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<Error | null>(null);
 
@@ -67,7 +69,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       if (!response.ok) {
         console.error("AuthProvider > register > response NOT ok", response);
         const data = await response.json();
-        console.log("AuthProvider > register > response NOT ok > data", data);
+        // console.log("AuthProvider > register > response NOT ok > data", data);
         setError(data.message);
         return;
       }
@@ -122,7 +124,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       if (!response.ok) {
         console.error("AuthProvider > login > response NOT ok", response);
         const data = await response.json();
-        console.log("AuthProvider > login > response NOT ok > data", data);
+        // console.log("AuthProvider > login > response NOT ok > data", data);
         setError(data.message);
         return;
       }
@@ -160,7 +162,41 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const logout = () => {
     setToken(null);
     setUser(null);
+    setLoading(false);
+    setError(null);
     localStorage.removeItem("token");
+  };
+
+  const verify = async () => {
+    try {
+      setError(null);
+      setLoading(true);
+      const token = localStorage.getItem("token");
+      // console.log("AuthProvider > verify > token", token);
+
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/auth/verify`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      // console.log("AuthProvider > verify > response", response);
+
+      if (!response.ok) {
+        throw response;
+      }
+      // the JsonWebToken was Verified
+      return;
+    } catch (error) {
+      console.error("AuthProvider > verify > catch > Error:", error);
+      setToken(null);
+      setUser(null);
+      localStorage.removeItem("token");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const value = {
@@ -175,6 +211,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     register,
     login,
     logout,
+    verify,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
